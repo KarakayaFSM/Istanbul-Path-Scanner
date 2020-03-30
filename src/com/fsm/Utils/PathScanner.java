@@ -16,17 +16,18 @@ public class PathScanner {
 
     }
 
-    private List<Class<?>> getClasses(String packageName) {
+    private List<Class<?>> getClassesFrom(String packageName) {
         String path = getPathNameFrom(packageName);
         Enumeration<URL> resources = getResourcesIn(path);
-
+        List<File> directories = getDirectoriesFrom(resources);
+        return getClasses(directories, packageName);
     }
 
     private List<File> getDirectoriesFrom(Enumeration<URL> resources) {
 
     }
 
-    private List<Class<?>> getClassesFrom(List<File> directories, String packageName) {
+    private List<Class<?>> getClasses(List<File> directories, String packageName) {
 
     }
 

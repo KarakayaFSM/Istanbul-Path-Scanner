@@ -20,9 +20,11 @@ public class PathScanner {
         return p;
     }
 
+
     public List<Class<?>> getClassesOf(String packageName) {
         return getClassesFrom(packageName);
     }
+
 
     public List<Class<?>> getClassesOf(String packageName, Predicate<Class<?>> filter) {
         return getClassesFrom(packageName)
@@ -31,12 +33,14 @@ public class PathScanner {
                 .collect(Collectors.toList());
     }
 
+
     private List<Class<?>> getClassesFrom(String packageName) {
         String path = getPathNameFrom(packageName);
         Enumeration<URL> resources = getResourcesIn(path);
         List<File> directories = getDirectoriesFrom(resources);
         return getClassesIn(directories, packageName);
     }
+
 
     private String getPathNameFrom(String packageName) {
         return packageName.replace(".", "/");
@@ -45,6 +49,7 @@ public class PathScanner {
     private Enumeration<URL> getResourcesIn(String path) {
         return getResources(path);
     }
+
 
     private Enumeration<URL> getResources(String pathName) {
         Enumeration<URL> emptyResources = Collections.emptyEnumeration();
@@ -57,11 +62,13 @@ public class PathScanner {
         return emptyResources;
     }
 
+
     private ClassLoader getClassLoader() {
         return Optional
-                .of(Thread.currentThread().getContextClassLoader())
+                .ofNullable(Thread.currentThread().getContextClassLoader())
                 .orElseThrow(() -> new NoSuchElementException("ClassLoader cannot be instantiated"));
     }
+
 
     private List<File> getDirectoriesFrom(Enumeration<URL> resources) {
         var directories = new ArrayList<File>();
@@ -73,6 +80,7 @@ public class PathScanner {
         return directories;
     }
 
+
     private List<Class<?>> getClassesIn(List<File> directories, String packageName) {
         var classes = new ArrayList<Class<?>>();
         directories.forEach(directory ->
@@ -83,7 +91,7 @@ public class PathScanner {
 
     private List<Class<?>> getClassesIn(File directory, String packageName) {
         var classes = new ArrayList<Class<?>>();
-        File[] files = directory.listFiles();
+        File[] files = getFiles(directory);
         List.of(files).forEach(file -> {
             if (file.isDirectory()) {
                 String dirName = validateDirName(file.getName());
@@ -94,6 +102,22 @@ public class PathScanner {
         });
         return classes;
     }
+
+
+    private File[] getFiles(File directory) {
+        File[] emptyFiles = new File[0];
+        try{
+            return Optional
+                    .ofNullable(directory.listFiles())
+                    .orElseThrow(() ->
+                            new NoSuchElementException(
+                                    "abstract pathname does not denote a directory"));
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+        }
+        return emptyFiles;
+    }
+
 
     private String validateDirName(String fileName) {
         try{
@@ -106,9 +130,11 @@ public class PathScanner {
         return fileName;
     }
 
+
     private String getSubDirName(String packageName, String dirName) {
         return packageName + "." + dirName;
     }
+
 
     private Class<?> getClass(String packageName, String fileName) {
         try {
@@ -119,9 +145,11 @@ public class PathScanner {
         return null;
     }
 
+
     private String getClassNameFrom(String packageName, String fileName) {
         return packageName + "." + removeDotClassPostFix(fileName);
     }
+
 
     String removeDotClassPostFix(String fileName) {
         return fileName.substring(0, fileName.length() - 6);

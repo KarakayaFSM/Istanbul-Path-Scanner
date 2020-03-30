@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) {
         List<Class<?>> allClasses = PathScanner.getInstance()
                 .getClassesOf("com.fsm");
-        allClasses.forEach(cls -> System.out.println(cls.getSimpleName()));
+        //allClasses.forEach(cls -> System.out.println(cls.getSimpleName()));
 
         List<Class<?>> controllerClasses = PathScanner
                 .getInstance()

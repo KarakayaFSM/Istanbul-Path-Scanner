@@ -1,5 +1,7 @@
 package com.fsm.Utils;
 
+import com.fsm.Exceptions.IllegalDirectoryNameException;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -84,14 +86,24 @@ public class PathScanner {
         File[] files = directory.listFiles();
         List.of(files).forEach(file -> {
             if (file.isDirectory()) {
-                String dirName = file.getName();
-                assert !dirName.contains(".");
+                String dirName = validateDirName(file.getName());
                 classes.addAll(getClassesIn(file, getSubDirName(packageName, dirName)));
             } else if (file.getName().endsWith(".class")) {
                 classes.add(getClass(packageName, file.getName()));
             }
         });
         return classes;
+    }
+
+    private String validateDirName(String fileName) {
+        try{
+            if(fileName.contains(".")) {
+                throw new IllegalDirectoryNameException();
+            }
+        } catch (IllegalDirectoryNameException e) {
+            e.printStackTrace();
+        }
+        return fileName;
     }
 
     private String getSubDirName(String packageName, String dirName) {
